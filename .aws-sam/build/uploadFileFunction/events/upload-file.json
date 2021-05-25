@@ -1,0 +1,7 @@
+{
+    "httpMethod": "POST",
+    "body" : "{\"fileName\": \"myinformation\",\"firstName\": \"Stefan\", \"lastName\": \"Aksentijevic\",\"country\": \"Serbia\",\"city\": \"Krusevac\"}"
+
+
+    
+}

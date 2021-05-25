@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: User Forecast
+Transform:
+- AWS::Serverless-2016-10-31
+Resources:
+  MyHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Auth:
+        DefaultAuthorizer: JWTTokenExample
+        Authorizers:
+          JWTTokenExample:
+            JwtConfiguration:
+              issuer: XXX
+              audience: XXX
+            IdentitySource: $request.header.Authorization
+  getByCityForecastFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-forecast.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 800
+      Description: Weather forecast information about city
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /city/{city}
+            Method: GET
+      CodeUri: getByCityForecastFunction
+  getFileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-file.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 500
+      Description: Download by END POINT
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /files
+            Method: GET
+      CodeUri: getFileFunction
+  fileUploadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/file-upload.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 500
+      Description: Upload file
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /upload-file
+            Method: POST
+      CodeUri: fileUploadFunction
+  uploadFileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/upload-file.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 500
+      Description: Upload file to bucket
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /upload
+            Method: POST
+      CodeUri: uploadFileFunction
+  newFileDeleteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/new-file-delete.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 500
+      Description: Upload file to bucket
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /file-delete/{filename}
+            Method: DELETE
+      CodeUri: newFileDeleteFunction
+  authorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/authorizer.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 500
+      Description: Endpoint authorization
+      CodeUri: authorizerFunction
+  authorizer1Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/authorizer1.handler
+      Runtime: nodejs14.x
+      MemorySize: 128
+      Timeout: 500
+      Description: Endpoint authorization
+      CodeUri: authorizer1Function
+Outputs:
+  WebEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
